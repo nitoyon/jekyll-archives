@@ -22,10 +22,11 @@ module Jekyll
     # type  - The type of archive. Can be one of "year", "month", "day", "category", or "tag"
     # posts - The array of posts that belong in this archive.
     def initialize(site, name, type, posts)
-      @site  = site
-      @posts = posts
-      @type  = type
-      @name  = name
+      @site   = site
+      @posts  = posts
+      @type   = type
+      @name   = name
+      @config = site.config['jekyll-archives']
 
       # Generate slug if tag or category (taken from jekyll/jekyll/features/support/env.rb)
       if name.is_a? String
@@ -39,7 +40,7 @@ module Jekyll
       @path = url
 
       @data = {
-        "layout" => site.config['jekyll-archives']['layout']
+        "layout" => layout
       }
       @content = ""
     end
@@ -48,7 +49,18 @@ module Jekyll
     #
     # Returns the template String.
     def template
-      site.config['jekyll-archives']['permalinks'][type]
+      @config['permalinks'][type]
+    end
+
+    # The layout to use for rendering
+    #
+    # Returns the layout as a String
+    def layout
+      if @config['layouts'] && @config['layouts'][type]
+        @config['layouts'][type]
+      else
+        @config['layout']
+      end
     end
 
     # Returns a hash of URL placeholder names (as symbols) mapping to the
